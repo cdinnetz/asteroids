@@ -10,10 +10,34 @@ class Asteroid(CircleShape):
         self.y = y
         self.radius = radius
 
+        # Generate irregular asteroid shape
+        self.vertices = self._generate_irregular_shape()
+
         print("Asteroid created at", x, y)
 
+    def _generate_irregular_shape(self):
+        """Generate random irregular polygon vertices for asteroid shape"""
+        num_vertices = random.randint(8, 12)
+        vertices = []
+
+        for i in range(num_vertices):
+            angle = (i / num_vertices) * 360
+            # Vary the distance from center to create irregular shape
+            distance = self.radius * random.uniform(0.7, 1.3)
+
+            # Calculate vertex position relative to center
+            rad = angle * (3.14159 / 180)
+            x = distance * pygame.math.Vector2(1, 0).rotate(angle).x
+            y = distance * pygame.math.Vector2(1, 0).rotate(angle).y
+
+            vertices.append((x, y))
+
+        return vertices
+
     def draw(self, screen):
-        pygame.draw.circle(screen, "white", self.position, self.radius, width=2)
+        # Calculate absolute positions of vertices
+        points = [(self.position.x + vx, self.position.y + vy) for vx, vy in self.vertices]
+        pygame.draw.polygon(screen, "white", points, width=2)
 
     def update(self, dt):
         self.position += (self.velocity * dt)
